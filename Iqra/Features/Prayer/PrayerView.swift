@@ -12,12 +12,27 @@ struct PrayerView: View {
                 // Language selector (top)
                 HStack {
                     Menu {
-                        Button("العربية") { vm.selectedLanguage = "arabic" }
-                        Button("Türkçe") { vm.selectedLanguage = "turkish" }
-                        Button("English") { vm.selectedLanguage = "english" }
-                        Button("Français") { vm.selectedLanguage = "french" }
-                        Button("Deutsch") { vm.selectedLanguage = "german" }
-                        Button("اردو") { vm.selectedLanguage = "urdu" }
+                        Button("🇸🇦 العربية") { vm.selectedLanguage = "arabic" }
+                        Button("🇹🇷 Türkçe") { vm.selectedLanguage = "turkish" }
+                        Button("🇬🇧 English") { vm.selectedLanguage = "english" }
+                        Button("🇫🇷 Français") { vm.selectedLanguage = "french" }
+                        Button("🇩🇪 Deutsch") { vm.selectedLanguage = "german" }
+                        Button("🇵🇰 اردو") { vm.selectedLanguage = "urdu" }
+                        Button("🇨🇳 中文") { vm.selectedLanguage = "chinese" }
+                        Button("🇰🇷 한국어") { vm.selectedLanguage = "korean" }
+                        Button("🇯🇵 日本語") { vm.selectedLanguage = "japanese" }
+                        Button("🇲🇾 Melayu") { vm.selectedLanguage = "malay" }
+                        Button("🇮🇩 Indonesia") { vm.selectedLanguage = "indonesian" }
+                        Button("🇹🇭 ไทย") { vm.selectedLanguage = "thai" }
+                        Button("🇻🇳 Tiếng Việt") { vm.selectedLanguage = "vietnamese" }
+                        Button("🇵🇹 Português") { vm.selectedLanguage = "portuguese" }
+                        Button("🇪🇸 Español") { vm.selectedLanguage = "spanish" }
+                        Button("🇷🇺 Русский") { vm.selectedLanguage = "russian" }
+                        Button("🇮🇳 हिंदी") { vm.selectedLanguage = "hindi" }
+                        Button("🇧🇩 বাংলা") { vm.selectedLanguage = "bengali" }
+                        Button("🇹🇿 Kiswahili") { vm.selectedLanguage = "swahili" }
+                        Button("🇮🇱 עברית") { vm.selectedLanguage = "hebrew" }
+                        Button("🇮🇷 فارسی") { vm.selectedLanguage = "persian" }
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "globe")
@@ -160,6 +175,21 @@ struct PrayerView: View {
         case "french": return "Français"
         case "german": return "Deutsch"
         case "urdu": return "اردو"
+        case "chinese": return "中文"
+        case "korean": return "한국어"
+        case "japanese": return "日本語"
+        case "malay": return "Melayu"
+        case "indonesian": return "Indonesia"
+        case "thai": return "ไทย"
+        case "vietnamese": return "Tiếng Việt"
+        case "portuguese": return "Português"
+        case "spanish": return "Español"
+        case "russian": return "Русский"
+        case "hindi": return "हिंदी"
+        case "bengali": return "বাংলা"
+        case "swahili": return "Kiswahili"
+        case "hebrew": return "עברית"
+        case "persian": return "فارسی"
         default: return "العربية"
         }
     }

@@ -91,19 +91,50 @@ final class GroqService {
         
         // Build language instruction dynamically
         let language_instruction: String
-        if language.lowercased() == "arabic" {
+        switch language.lowercased() {
+        case "arabic":
             language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
-        } else if language.lowercased() == "turkish" {
+        case "turkish":
             language_instruction = "Cevap dilini Türkçe yapın. Tüm açıklamalar Türkçe olsun."
-        } else if language.lowercased() == "english" {
+        case "english":
             language_instruction = "Answer in English only. All explanations in English."
-        } else if language.lowercased() == "french" {
+        case "french":
             language_instruction = "Répondez en français uniquement. Toutes les explications en français."
-        } else if language.lowercased() == "german" {
+        case "german":
             language_instruction = "Antworten Sie nur auf Deutsch. Alle Erklärungen auf Deutsch."
-        } else if language.lowercased() == "urdu" {
+        case "urdu":
             language_instruction = "اردو میں جواب دیں۔ تمام وضاحتیں اردو میں ہوں۔"
-        } else {
+        case "chinese":
+            language_instruction = "请只用简体中文回答。所有解释都必须是简体中文。"
+        case "korean":
+            language_instruction = "한국어로만 답변하세요. 모든 설명은 한국어여야 합니다."
+        case "japanese":
+            language_instruction = "日本語だけで答えてください。すべての説明は日本語である必要があります。"
+        case "malay":
+            language_instruction = "Jawab hanya dalam bahasa Melayu. Semua penjelasan harus dalam bahasa Melayu."
+        case "indonesian":
+            language_instruction = "Jawab hanya dalam bahasa Indonesia. Semua penjelasan harus dalam bahasa Indonesia."
+        case "thai":
+            language_instruction = "ตอบเฉพาะภาษาไทยเท่านั้น คำอธิบายทั้งหมดต้องเป็นภาษาไทย"
+        case "vietnamese":
+            language_instruction = "Chỉ trả lời bằng tiếng Việt. Tất cả các giải thích phải bằng tiếng Việt."
+        case "portuguese":
+            language_instruction = "Responda apenas em português. Todas as explicações devem ser em português."
+        case "spanish":
+            language_instruction = "Responda solo en español. Todas las explicaciones deben ser en español."
+        case "russian":
+            language_instruction = "Ответьте только на русском языке. Все объяснения должны быть на русском языке."
+        case "hindi":
+            language_instruction = "केवल हिंदी में उत्तर दें। सभी व्याख्याएं हिंदी में होनी चाहिए।"
+        case "bengali":
+            language_instruction = "শুধুমাত্র বাংলায় উত্তর দিন। সমস্ত ব্যাখ্যা বাংলায় হওয়া উচিত।"
+        case "swahili":
+            language_instruction = "Jibu kwa Kiswahili tu. Maelezo yote lazima yawe kwa Kiswahili."
+        case "hebrew":
+            language_instruction = "ענה רק בעברית. כל ההסברים חייבים להיות בעברית."
+        case "persian":
+            language_instruction = "فقط به فارسی پاسخ دهید. تمام توضیحات باید به فارسی باشند."
+        default:
             language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
         }
         
@@ -131,7 +162,7 @@ final class GroqService {
         أجب بصيغة هذه (بالضبط، بدون إضافات):
         السورة: [فقط اسم السورة]
         الآية: [فقط الرقم]
-        الشرح: [جملة روحية قصيرة جداً بالعربية أو اللغة المختارة]
+        الشرح: [جملة روحية قصيرة جداً باللغة المختارة]
         التالية: [اسم السورة رقم]
         """
         
