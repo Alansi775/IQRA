@@ -55,8 +55,9 @@ final class GroqService {
             if let decodedResponse = try? JSONDecoder().decode(GroqChatResponse.self, from: data),
                let firstChoice = decodedResponse.choices.first,
                let content = firstChoice.message.content {
-                print("✅ Groq response: \(content)")
-                return content.trimmingCharacters(in: .whitespaces)
+                let explanation = String(content)  // Explicit String conversion
+                print("✅ Groq response: \(explanation)")
+                return explanation.trimmingCharacters(in: .whitespaces)
             }
             
             throw NSError(domain: "GroqService", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
@@ -71,9 +72,14 @@ final class GroqService {
 private struct GroqChatResponse: Codable {
     let model: String
     let choices: [Choice]
+    let id: String?
+    let object: String?
+    let created: Int?  // Timestamp, not a Date object
     
     struct Choice: Codable {
         let message: Message
+        let index: Int?
+        let finish_reason: String?
     }
     
     struct Message: Codable {

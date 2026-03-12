@@ -94,10 +94,11 @@ final class PrayerViewModel: ObservableObject {
                     """
                     
                     let explain = try await groqService.explainVerse(prompt: explainPrompt)
+                    let explanationText = String(explain)  // Explicit String conversion
                     
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        explanation = explain
-                        print("✅ Groq explanation: \(explain)")
+                        explanation = explanationText
+                        print("✅ Groq explanation: \(explanationText)")
                     }
                 } else if wordCount < 3 {
                     print("⏳ Partial verse (< 3 words) - waiting for complete verse before Groq")

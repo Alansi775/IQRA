@@ -255,7 +255,7 @@ final class QuranService {
         
         do {
             var request = URLRequest(url: url)
-            request.timeoutInterval = 3  // Increased timeout for reliability
+            request.timeoutInterval = 3
             
             let (data, response) = try await URLSession.shared.data(for: request)
             
@@ -276,12 +276,18 @@ final class QuranService {
                 if let response = try? JSONDecoder().decode(AyahResponse.self, from: data),
                    let ayahData = response.data {
                     
+                    // Explicitly convert all JSON strings to Swift String type
+                    let arabicText = String(ayahData.text)
+                    let surahNumber = Int(ayahData.surah.number)
+                    let ayahNumber = Int(ayahData.numberInSurah)
+                    let sName = String(ayahData.surah.name)
+                    
                     let ayah = Ayah(
-                        surah: ayahData.surah.number,
-                        ayah: ayahData.numberInSurah,
-                        arabic: ayahData.text,
+                        surah: surahNumber,
+                        ayah: ayahNumber,
+                        arabic: arabicText,
                         translation: "",
-                        surahName: ayahData.surah.name
+                        surahName: sName
                     )
                     
                     // Cache it for future use
@@ -290,7 +296,6 @@ final class QuranService {
                 }
             }
         } catch {
-            // Silently fail to avoid blocking the search
             print("  ⚠️  API timeout for \(surah):\(ayah)")
         }
         
