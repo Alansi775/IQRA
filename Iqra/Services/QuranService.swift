@@ -35,14 +35,57 @@ final class QuranService {
         ("ن والقلم وما", 68, 1),
         ("والقلم وما يسطرون", 68, 1),
         
+        // Surah 81 - At-Takwir
+        ("ما أنت بنعمة ربك", 81, 22),
+        ("ما أنت بنعمة", 81, 22),
+        
+        // Surah 82 - Al-Infitar
+        ("إذا السماء انفطرت", 82, 1),
+        
+        // Surah 84 - Al-Inshiqaq
+        ("إذا السماء انشقت", 84, 1),
+        
+        // Surah 87 - Al-Ala
+        ("سبح اسم ربك الأعلى", 87, 1),
+        
+        // Surah 88 - Al-Ghashiyah
+        ("هل أتاك حديث", 88, 1),
+        
+        // Surah 89 - Al-Fajr
+        ("والفجر وليال عشر", 89, 1),
+        
+        // Surah 92 - Al-Lail
+        ("والليل إذا يغشى", 92, 1),
+        
+        // Surah 93 - Ad-Duhaa
+        ("والضحى والليل إذا", 93, 1),
+        
+        // Surah 94 - Al-Inshirah
+        ("ألم نشرح لك", 94, 1),
+        
         // Surah 96 - Al-Alaq
         ("اقرأ باسم ربك", 96, 1),
         
         // Surah 97 - Al-Qadr
         ("إنا أنزلناه في", 97, 1),
         
+        // Surah 99 - Az-Zalzalah
+        ("إذا زلزلت الأرض", 99, 1),
+        
+        // Surah 100 - Al-Adiyat
+        ("والعاديات ضبحا", 100, 1),
+        
+        // Surah 101 - Al-Qaria
+        ("القارعة ما القارعة", 101, 1),
+        
         // Surah 103 - Al-Asr
         ("والعصر إن الإنسان", 103, 1),
+        
+        // Surah 104 - Al-Humaza
+        ("ويل لكل همزة", 104, 1),
+        
+        // Surah 105 - Al-Fil
+        ("ألم تر كيف فعل", 105, 1),
         
         // Surah 112 - Al-Ikhlas
         ("قل هو الله", 112, 1),
@@ -153,16 +196,16 @@ final class QuranService {
         print("🔍 Smart searching for: \(searchNorm)")
         
         do {
-            // Progressive search strategy:
-            // Phase 1: Search common surahs (36, 55, 67-114)
-            if let result = try await searchSurahRange(surahStart: 36, surahEnd: 114, ayahStart: 1, ayahEnd: 5, searchText: searchNorm) {
+            // Progressive search strategy with longer timeouts:
+            // Phase 1: Search high-probability surahs (36-114, first 10 ayahs)
+            if let result = try await searchSurahRange(surahStart: 36, surahEnd: 114, ayahStart: 1, ayahEnd: 10, searchText: searchNorm) {
                 return result
             }
             
             print("⏳ Expanding search to all surahs...")
             
-            // Phase 2: Search all remaining surahs
-            if let result = try await searchSurahRange(surahStart: 1, surahEnd: 35, ayahStart: 1, ayahEnd: 5, searchText: searchNorm) {
+            // Phase 2: Search remaining surahs (1-35, first 10 ayahs)
+            if let result = try await searchSurahRange(surahStart: 1, surahEnd: 35, ayahStart: 1, ayahEnd: 10, searchText: searchNorm) {
                 return result
             }
         } catch {
@@ -201,10 +244,11 @@ final class QuranService {
         
         print("  🔎 Searching surahs \(surahStart)-\(surahEnd), ayahs \(ayahStart)-\(ayahEnd)")
         let searchStart = Date()
+        let maxSearchTime: TimeInterval = 10.0  // Increased from 5 to 10 seconds
         
         for surah in surahStart...surahEnd {
             // Timeout check
-            if Date().timeIntervalSince(searchStart) > 5.0 {
+            if Date().timeIntervalSince(searchStart) > maxSearchTime {
                 print("  ⏱️  Timeout")
                 return nil
             }
