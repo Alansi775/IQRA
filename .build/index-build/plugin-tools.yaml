@@ -1,0 +1,47 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "Iqra-arm64-apple-macosx26.0-debug.module": ["<Iqra-arm64-apple-macosx26.0-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<Iqra-arm64-apple-macosx26.0-debug.module>"]
+  "test": ["<Iqra-arm64-apple-macosx26.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/mackbook/Projects/Iqra/Iqra/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/mackbook/Projects/Iqra/Iqra/App/AppState.swift","/Users/mackbook/Projects/Iqra/Iqra/App/IqraApp.swift","/Users/mackbook/Projects/Iqra/Iqra/Config/Config.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Onboarding/OnboardingView.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Prayer/PrayerView.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Prayer/PrayerViewModel.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Translation/TranslationView.swift","/Users/mackbook/Projects/Iqra/Iqra/Models/Ayah.swift","/Users/mackbook/Projects/Iqra/Iqra/Models/Translation.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/AudioService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/GroqService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/QuranService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/QuranService_old.swift"]
+    outputs: ["/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/sources"]
+    description: "Write auxiliary file /Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/sources"
+
+  "/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Library/Developer/CommandLineTools/usr/bin/swiftc"]
+    outputs: ["/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+
+  "<Iqra-arm64-apple-macosx26.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Modules/Iqra.swiftmodule"]
+    outputs: ["<Iqra-arm64-apple-macosx26.0-debug.module>"]
+
+  "C.Iqra-arm64-apple-macosx26.0-debug.module":
+    tool: shell
+    inputs: ["/Users/mackbook/Projects/Iqra/Iqra/App/AppState.swift","/Users/mackbook/Projects/Iqra/Iqra/App/IqraApp.swift","/Users/mackbook/Projects/Iqra/Iqra/Config/Config.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Onboarding/OnboardingView.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Prayer/PrayerView.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Prayer/PrayerViewModel.swift","/Users/mackbook/Projects/Iqra/Iqra/Features/Translation/TranslationView.swift","/Users/mackbook/Projects/Iqra/Iqra/Models/Ayah.swift","/Users/mackbook/Projects/Iqra/Iqra/Models/Translation.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/AudioService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/GroqService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/QuranService.swift","/Users/mackbook/Projects/Iqra/Iqra/Services/QuranService_old.swift","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/sources"]
+    outputs: ["/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Modules/Iqra.swiftmodule"]
+    description: "Compiling Swift Module 'Iqra' (13 sources)"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-module-name","Iqra","-emit-dependencies","-emit-module","-emit-module-path","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Modules/Iqra.swiftmodule","-output-file-map","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/output-file-map.json","-incremental","@/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Iqra.build/sources","-I","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx10.13","-incremental","-enable-batch-mode","-serialize-diagnostics","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/mackbook/Projects/Iqra/.build/index-build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","Iqra_main","-swift-version","5","-Xfrontend","-experimental-lazy-typecheck","-Xfrontend","-experimental-skip-all-function-bodies","-Xfrontend","-experimental-allow-module-with-compiler-errors","-Xfrontend","-empty-abi-descriptor","-I","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-L","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-plugin-path","/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","iqra"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/mackbook/Projects/Iqra/Iqra/","/Users/mackbook/Projects/Iqra/Package.swift","/Users/mackbook/Projects/Iqra/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

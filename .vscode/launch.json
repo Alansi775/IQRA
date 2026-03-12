@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Iqra}",
+            "name": "Debug Iqra",
+            "target": "Iqra",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Iqra"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:Iqra}",
+            "name": "Release Iqra",
+            "target": "Iqra",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Iqra"
+        }
+    ]
+}
