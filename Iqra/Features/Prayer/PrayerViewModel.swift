@@ -54,68 +54,57 @@ final class PrayerViewModel: ObservableObject {
         print("📝 Processing text: \(text)")
         
         do {
-            // SMART TEXT WINDOW: Focus on LAST 8 words (current verse recognition)
-            // Since speech continuously recognizes, new words are added at the end
-            // This ensures we find the CURRENT verse being recited, not old accumulated text
-            let words = text.split(separator: " ").map { String($0) }
-            let textWindow = words.suffix(8).joined(separator: " ")
-            let searchText = textWindow.isEmpty ? text : textWindow
+            // Calculate word count for threshold check
+            let wordCount = text.split(separator: " ").count
+            print("📊 Word count: \(wordCount)")
             
-            print("🔍 Search window: \(searchText)")
-            
-            // Step 1: Search for the verse in Quran using API
-            if let ayah = try await quranService.searchVerse(text: searchText) {
-                let ayahId = "\(ayah.surah)-\(ayah.ayah)"
-                
-                // Update UI with the found ayah (minimal animation)
-                currentAyah = ayah
-                print("✅ Found ayah: Surah \(ayah.surah), Ayah \(ayah.ayah)")
-                
-                // CRITICAL: Clear recognized text IMMEDIATELY (not in animation)
-                // to prevent accumulation when the imam moves to next verse
-                recognizedText = ""
-                
-                // Calculate word count from ORIGINAL text (for Groq threshold)
-                let wordCount = text.split(separator: " ").count
-                print("📊 Word count: \(wordCount)")
-                
-                if wordCount >= 3 && ayahId != lastProcessedAyahId {
-                    print("✅ Sending complete verse to Groq (>= 3 words)")
-                    lastProcessedAyahId = ayahId
-                    
-                    // Step 2: Send verse TEXT to Groq for dynamic explanation
-                    let explainPrompt = """
-                    أنت معلم قرآني بليغ. ساعد المصلي في الصلاة أن يفهم هذه الآية في جملة واحدة قصيرة جداً (أقل من 15 كلمة).
-                    ركز على المعنى الجوهري والشعور الروحي، ليس التفاصيل.
-                    
-                    الآية: \(ayah.arabic)
-                    """
-                    
-                    do {
-                        let explain = try await groqService.explainVerse(prompt: explainPrompt)
-                        let explanationText = String(explain).trimmingCharacters(in: .whitespaces)
-                        
-                        guard !explanationText.isEmpty else {
-                            print("⚠️  Groq returned empty explanation")
-                            explanation = ""
-                            return
-                        }
-                        
-                        explanation = explanationText
-                        print("✅ Groq explanation: \(explanationText)")
-                    } catch {
-                        print("❌ Groq error: \(error.localizedDescription)")
-                        explanation = ""
-                    }
-                } else if wordCount < 3 {
-                    print("⏳ Partial verse (< 3 words) - waiting for complete verse before Groq")
-                    explanation = "" // Clear explanation while waiting for complete verse
-                } else {
-                    print("♻️  Same ayah (ID: \(ayahId)) - reusing cached explanation")
-                }
-            } else {
-                print("❌ Could not find matching verse")
+            // Skip processing if text is too short
+            guard wordCount >= 2 else {
+                print("⏳ Waiting for more words...")
+                return
             }
+            
+            // AI-powered verse identification
+            // Let LLM guess which verse, get explanation, and prepare for next verse
+            print("🧠 Using AI to identify verse...")
+            
+            let identification = try await groqService.identifyVerseAndExplain(recognizedText: text)
+            
+            guard !identification.surahName.isEmpty && !identification.ayahNumber.isEmpty else {
+                print("⚠️  LLM could not identify verse")
+                return
+            }
+            
+            // Create display text from LLM identification
+            let displaySurah = identification.surahName
+            let displayAyah = identification.ayahNumber
+            let displayExplanation = identification.explanation
+            let nextVerse = identification.nextVerse
+            
+            print("✅ Identified: \(displaySurah) \(displayAyah)")
+            print("📖 Next verse: \(nextVerse)")
+            
+            let ayahId = "\(displaySurah)-\(displayAyah)"
+            
+            // Update UI with identified verse
+            currentAyah = Ayah(
+                surah: 0,  // Placeholder
+                ayah: 0,   // Placeholder
+                arabic: displaySurah,  // Display surah name
+                translation: nextVerse,  // Show next verse as translation
+                surahName: displaySurah
+            )
+            
+            // Clear recognized text immediately
+            recognizedText = ""
+            
+            // Update explanation if we haven't processed this ayah yet
+            if ayahId != lastProcessedAyahId && !displayExplanation.isEmpty {
+                lastProcessedAyahId = ayahId
+                explanation = displayExplanation
+                print("✅ Explanation: \(displayExplanation)")
+            }
+            
         } catch {
             print("❌ Error processing text: \(error)")
             errorMessage = "خطأ في معالجة الآية"
