@@ -1,2 +1,27 @@
 .env
 *.env
+
+# Xcode build artifacts
+.build/
+build/
+*.xcodeproj/
+*.playground
+*.xcworkspace/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swiftpm/
+
+# Swift Package Manager
+.swiftpm/
+.package.resolved
+
+# Local development
+*.swiftdeps
+.swiftpm/config/registries.json
+.swiftpm/xcode/package.xcworkspace/xcuserdata/

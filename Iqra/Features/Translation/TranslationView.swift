@@ -20,6 +20,5 @@ struct TranslationView: View {
                 .lineSpacing(8)
                 .padding(.horizontal, 32)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.97)))
     }
 }

@@ -67,11 +67,9 @@ final class PrayerViewModel: ObservableObject {
             if let ayah = try await quranService.searchVerse(text: searchText) {
                 let ayahId = "\(ayah.surah)-\(ayah.ayah)"
                 
-                // Always update UI with the found ayah
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    currentAyah = ayah
-                    print("✅ Found ayah: Surah \(ayah.surah), Ayah \(ayah.ayah)")
-                }
+                // Update UI with the found ayah (minimal animation)
+                currentAyah = ayah
+                print("✅ Found ayah: Surah \(ayah.surah), Ayah \(ayah.ayah)")
                 
                 // CRITICAL: Clear recognized text IMMEDIATELY (not in animation)
                 // to prevent accumulation when the imam moves to next verse
@@ -96,10 +94,8 @@ final class PrayerViewModel: ObservableObject {
                     let explain = try await groqService.explainVerse(prompt: explainPrompt)
                     let explanationText = String(explain)  // Explicit String conversion
                     
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        explanation = explanationText
-                        print("✅ Groq explanation: \(explanationText)")
-                    }
+                    explanation = explanationText
+                    print("✅ Groq explanation: \(explanationText)")
                 } else if wordCount < 3 {
                     print("⏳ Partial verse (< 3 words) - waiting for complete verse before Groq")
                     explanation = "" // Clear explanation while waiting for complete verse

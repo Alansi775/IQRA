@@ -1,7 +1,6 @@
 import Foundation
 
-struct Ayah: Codable, Equatable, Identifiable {
-    let id: String  // Unique identifier to help SwiftUI track changes
+struct Ayah: Codable, Equatable {
     let surah: Int
     let ayah: Int
     let arabic: String
@@ -10,7 +9,6 @@ struct Ayah: Codable, Equatable, Identifiable {
     
     // Custom initializer with explicit String conversions
     init(surah: Int, ayah: Int, arabic: String, translation: String, surahName: String) {
-        self.id = "\(surah)-\(ayah)"
         self.surah = surah
         self.ayah = ayah
         self.arabic = String(arabic).trimmingCharacters(in: .whitespaces)
@@ -36,8 +34,6 @@ struct Ayah: Codable, Equatable, Identifiable {
         arabic = String(arabicRaw).trimmingCharacters(in: .whitespaces)
         translation = String(translationRaw).trimmingCharacters(in: .whitespaces)
         surahName = String(surahNameRaw).trimmingCharacters(in: .whitespaces)
-        
-        id = "\(surah)-\(ayah)"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -51,7 +47,6 @@ struct Ayah: Codable, Equatable, Identifiable {
     
     // Explicit Equatable conformance
     static func == (lhs: Ayah, rhs: Ayah) -> Bool {
-        lhs.id == rhs.id && 
         lhs.surah == rhs.surah && 
         lhs.ayah == rhs.ayah &&
         String(lhs.arabic) == String(rhs.arabic) &&
