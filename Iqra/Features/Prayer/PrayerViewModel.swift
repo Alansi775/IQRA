@@ -137,11 +137,11 @@ final class PrayerViewModel: ObservableObject {
             recognizedText = ""
             textBuffer = ""  // Clear buffer
             
-            // Update explanation if we haven't processed this ayah yet
-            if ayahId != lastProcessedAyahId && !displayExplanation.isEmpty {
-                lastProcessedAyahId = ayahId
-                explanation = displayExplanation
-            }
+            // Always update explanation (even for same verse, explanations may differ)
+            explanation = displayExplanation
+            
+            // Track last processed to prevent excessive API calls
+            lastProcessedAyahId = ayahId
             
         } catch {
             print("❌ Error processing buffer: \(error)")

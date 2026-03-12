@@ -71,7 +71,7 @@ struct PrayerView: View {
                 
                 Spacer()
                 
-                // EXPLANATION ONLY - HUGE TEXT, CENTERED
+                // EXPLANATION ONLY - HUGE TEXT, CENTERED, WITH FADE ANIMATION
                 if !vm.explanation.isEmpty {
                     VStack(alignment: .center, spacing: 0) {
                         Text(vm.explanation)
@@ -80,15 +80,11 @@ struct PrayerView: View {
                             .lineSpacing(12)
                             .multilineTextAlignment(.center)
                             .padding(32)
+                            .id(vm.explanation)  // Force re-render on explanation change
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.clear)
                     .transition(.opacity)
-                    .onAppear {
-                        withAnimation(.easeIn(duration: 0.5)) {
-                            showExplanation = true
-                        }
-                    }
                 } else {
                     // Idle state
                     VStack(spacing: 12) {
