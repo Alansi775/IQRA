@@ -14,6 +14,12 @@ final class PrayerViewModel: ObservableObject {
     
     private var lastProcessedAyahId: String = "" // Prevent duplicate Groq calls
     
+    // Buffer system: collect text for 1-2 seconds before sending to LLM
+    private var textBuffer: String = ""
+    private var bufferTimer: Timer?
+    private let BUFFER_TIMEOUT: TimeInterval = 1.5  // استجمع لمدة 1.5 ثانية
+    private let MIN_BUFFER_WORDS = 2  // الحد الأدنى من الكلمات قبل المعالجة
+    
     func toggleListening() async {
         if isListening {
             stop()
@@ -47,28 +53,52 @@ final class PrayerViewModel: ObservableObject {
     private func stop() {
         audioService.stopListening()
         isListening = false
+        bufferTimer?.invalidate()  // Cancel any pending buffer processing
+        bufferTimer = nil
     }
     
     private func processRecognizedText(_ text: String) async {
+        // Update UI with live text
         recognizedText = text
         print("📝 Processing text: \(text)")
         
+        // Add text to buffer instead of processing immediately
+        textBuffer = text
+        
+        // Reset and restart buffer timer
+        bufferTimer?.invalidate()
+        
+        // Wait for more words to arrive (give STT time to complete the verse)
+        bufferTimer = Timer.scheduledTimer(withTimeInterval: BUFFER_TIMEOUT, repeats: false) { [weak self] _ in
+            Task { await self?.processBuffer() }
+        }
+    }
+    
+    /// Process the accumulated buffer when timer expires
+    private func processBuffer() async {
+        guard !textBuffer.isEmpty else {
+            print("⚠️  Buffer is empty after timeout")
+            return
+        }
+        
+        print("✅ Buffer ready after \(BUFFER_TIMEOUT)s with text: \(textBuffer)")
+        
         do {
             // Calculate word count for threshold check
-            let wordCount = text.split(separator: " ").count
-            print("📊 Word count: \(wordCount)")
+            let wordCount = textBuffer.split(separator: " ").count
+            print("📊 Final word count: \(wordCount)")
             
             // Skip processing if text is too short
-            guard wordCount >= 2 else {
-                print("⏳ Waiting for more words...")
+            guard wordCount >= MIN_BUFFER_WORDS else {
+                print("⏳ Still too few words (\(wordCount) < \(MIN_BUFFER_WORDS))")
                 return
             }
             
             // AI-powered verse identification
             // Let LLM guess which verse, get explanation, and prepare for next verse
-            print("🧠 Using AI to identify verse...")
+            print("🧠 Using AI to identify verse from buffered text...")
             
-            let identification = try await groqService.identifyVerseAndExplain(recognizedText: text)
+            let identification = try await groqService.identifyVerseAndExplain(recognizedText: textBuffer)
             
             guard !identification.surahName.isEmpty && !identification.ayahNumber.isEmpty else {
                 print("⚠️  LLM could not identify verse")
@@ -83,6 +113,7 @@ final class PrayerViewModel: ObservableObject {
             
             print("✅ Identified: \(displaySurah) \(displayAyah)")
             print("📖 Next verse: \(nextVerse)")
+            print("💭 Explanation: \(displayExplanation)")
             
             let ayahId = "\(displaySurah)-\(displayAyah)"
             
@@ -97,17 +128,16 @@ final class PrayerViewModel: ObservableObject {
             
             // Clear recognized text immediately
             recognizedText = ""
+            textBuffer = ""  // Clear buffer
             
             // Update explanation if we haven't processed this ayah yet
             if ayahId != lastProcessedAyahId && !displayExplanation.isEmpty {
                 lastProcessedAyahId = ayahId
                 explanation = displayExplanation
-                print("✅ Explanation: \(displayExplanation)")
             }
             
         } catch {
-            print("❌ Error processing text: \(error)")
-            errorMessage = "خطأ في معالجة الآية"
+            print("❌ Error processing buffer: \(error)")
         }
     }
 }
