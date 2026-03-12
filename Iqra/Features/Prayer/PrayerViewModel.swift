@@ -18,7 +18,7 @@ final class PrayerViewModel: ObservableObject {
     // Buffer system: collect text for 1-2 seconds before sending to LLM
     private var textBuffer: String = ""
     private var bufferTimer: Timer?
-    private var lastProcessedBuffer: String = ""  // Track last buffer to avoid duplication
+    private var lastFullProcessedText: String = ""  // Track FULL text processed (not just new part)
     private let BUFFER_TIMEOUT: TimeInterval = 1.5  // استجمع لمدة 1.5 ثانية
     private let MIN_BUFFER_WORDS = 2  // الحد الأدنى من الكلمات قبل المعالجة
     
@@ -71,17 +71,24 @@ final class PrayerViewModel: ObservableObject {
         print("📝 Processing text: \(text)")
         
         // Extract only NEW text (avoid duplication from STT)
-        // If text starts with what we already processed, take only the new part
+        // Compare with FULL last processed text, not just last buffer part
         let cleanedBuffer: String
-        if !lastProcessedBuffer.isEmpty && text.starts(with: lastProcessedBuffer) {
-            // Text contains old buffer + new words
-            let newPart = String(text.dropFirst(lastProcessedBuffer.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        if !lastFullProcessedText.isEmpty && text.starts(with: lastFullProcessedText) {
+            // Text contains old full text + new words (e.g., previous "...رب العالمين" + new "مالك...")
+            let newPart = String(text.dropFirst(lastFullProcessedText.count)).trimmingCharacters(in: .whitespacesAndNewlines)
             cleanedBuffer = newPart.isEmpty ? text : newPart
-            print("🔄 New text detected: '\(cleanedBuffer)' (filtered from accumulated STT)")
+            print("🔄 Continuing: '\(cleanedBuffer)' (filtered from accumulated STT)")
+        } else if !lastFullProcessedText.isEmpty && lastFullProcessedText.starts(with: text) {
+            // User repeated earlier part (e.g., "الحمد لله" after already saying "الحمد لله رب العالمين")
+            // Skip to prevent re-processing same text
+            print("⏭  Skipping repeat of earlier portion")
+            textBuffer = ""
+            bufferTimer?.invalidate()
+            return
         } else {
-            // Completely new text
+            // Completely fresh text (or first read)
             cleanedBuffer = text
-            print("🆕 Fresh text detected: '\(cleanedBuffer)'")
+            print("🆕 Fresh text: '\(cleanedBuffer)'")
         }
         
         textBuffer = cleanedBuffer
@@ -147,8 +154,15 @@ final class PrayerViewModel: ObservableObject {
                 surahName: displaySurah
             )
             
-            // IMPORTANT: Save processed buffer BEFORE clearing
-            lastProcessedBuffer = textBuffer
+            // IMPORTANT: Save FULL accumulated text (buffer + what we sent to LLM)
+            // This prevents reprocessing the same section
+            if recognizedText.isEmpty {
+                // If recognizedText was cleared, use lastFullProcessedText + buffer
+                lastFullProcessedText = lastFullProcessedText.isEmpty ? textBuffer : lastFullProcessedText + " " + textBuffer
+            } else {
+                // Use current recognized text (which has full STT output)
+                lastFullProcessedText = recognizedText
+            }
             
             // Clear recognized text immediately
             recognizedText = ""
