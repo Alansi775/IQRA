@@ -58,6 +58,12 @@ final class PrayerViewModel: ObservableObject {
     }
     
     private func processRecognizedText(_ text: String) async {
+        // Ignore empty text from recognition errors
+        guard !text.trimmingCharacters(in: .whitespaces).isEmpty else {
+            print("⚠️  Empty text received, skipping")
+            return
+        }
+        
         // Update UI with live text
         recognizedText = text
         print("📝 Processing text: \(text)")

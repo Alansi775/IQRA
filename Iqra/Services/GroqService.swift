@@ -97,26 +97,22 @@ final class GroqService {
         "\(recognizedText)"
         
         المطلوب:
-        1. خمّن أي آية من القرآن الكريم يقصد المصلي (حتى لو STT غير دقيق تماماً)
-        2. أعطِ اسم السورة ورقم الآية الصحيحة
-        3. أعطِ شرح روحي قصير جداً (جملة واحدة أقل من 12 كلمة) يصف:
-           - الشعور الذي يحس فيه المصلي من الآية
-           - الدرس الروحي الجوهري
-           - الرسالة الإلهية المباشرة للمصلي
-           - ليس تفسير أكاديمي، بل تأثير عاطفي روحي
-        4. اذكر السورة والآية التالية (للاستعداد النفسي)
+        1. خمّن أي آية من القرآن الكريم بدقة (حتى لو STT غير دقيق)
+        2. أعطِ اسم السورة ورقم الآية الصحيحة فقط
+        3. شرح روحي قصير جداً (جملة واحدة أقل من 10 كلمات فقط) - الشعور الروحي فقط
+        4. اسم السورة والآية التالية للاستعداد النفسي
         
-        مثال الأجوبة المطلوبة:
-        - بدل "رد على اتهام النبي" → "ثبات النبي وعظمة خلقه"
-        - بدل "شكر الله" → "اعتراف بتفضل الله العظيم علينا"
-        - بدل "أمر من الله" → "أوامر الله حكيمة ورحيمة"
-        - بدل "تحذير من الجنة" → "خوف محب من ناراً تفني"
+        تحذير - لا تفعل:
+        ❌ لا تضيف تعليقات إضافية
+        ❌ لا تقول "أنا أعتقد" أو "قد يكون"
+        ❌ لا تشرح السياق الأكاديمي
+        ✅ فقط: السورة + الآية + الشعور الروحي + التالية
         
-        أجب بصيغة مشابهة لهذه (بالضبط):
-        السورة: اسم السورة
-        الآية: رقم
-        الشرح: [الشعور الروحي فقط، جملة قصيرة]
-        التالية: اسم السورة الآية رقم
+        أجب بصيغة هذه (بالضبط، بدون إضافات):
+        السورة: [فقط اسم السورة]
+        الآية: [فقط الرقم]
+        الشرح: [جملة روحية قصيرة جداً]
+        التالية: [اسم السورة رقم]
         """
         
         let requestBody: [String: Any] = [
@@ -127,8 +123,8 @@ final class GroqService {
                     "content": identifyPrompt
                 ]
             ],
-            "max_tokens": 150,
-            "temperature": 0.4  // Balanced for spiritual accuracy
+            "max_tokens": 100,  // Reduced from 150 to force conciseness
+            "temperature": 0.3  // More conservative (was 0.4) for consistent format
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
@@ -185,18 +181,32 @@ final class GroqService {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             
             if trimmed.hasPrefix("السورة:") {
-                surahName = trimmed.replacingOccurrences(of: "السورة:", with: "")
+                let value = trimmed.replacingOccurrences(of: "السورة:", with: "")
                     .trimmingCharacters(in: .whitespaces)
+                // Take only the first word/number (ignore extra text)
+                surahName = value.split(separator: " ").first.map(String.init) ?? value
             } else if trimmed.hasPrefix("الآية:") {
-                ayahNumber = trimmed.replacingOccurrences(of: "الآية:", with: "")
+                let value = trimmed.replacingOccurrences(of: "الآية:", with: "")
                     .trimmingCharacters(in: .whitespaces)
+                // Take only the first number (ignore extra text)
+                ayahNumber = value.split(separator: " ").first.map(String.init) ?? value
             } else if trimmed.hasPrefix("الشرح:") {
-                explanation = trimmed.replacingOccurrences(of: "الشرح:", with: "")
+                let value = trimmed.replacingOccurrences(of: "الشرح:", with: "")
                     .trimmingCharacters(in: .whitespaces)
+                // Take everything up to certain delimiters (ignore garbage)
+                explanation = value.split(separator: "،").first.map(String.init) ?? value
+                explanation = explanation.split(separator: "،").first.map(String.init) ?? explanation
             } else if trimmed.hasPrefix("التالية:") {
-                nextVerse = trimmed.replacingOccurrences(of: "التالية:", with: "")
+                let value = trimmed.replacingOccurrences(of: "التالية:", with: "")
                     .trimmingCharacters(in: .whitespaces)
+                // Take everything up to certain delimiters
+                nextVerse = value.split(separator: "،").first.map(String.init) ?? value
             }
+        }
+        
+        // Validate that we got meaningful results
+        if surahName.isEmpty || ayahNumber.isEmpty {
+            print("⚠️  Invalid parse result - surahName: '\(surahName)', ayahNumber: '\(ayahNumber)'")
         }
         
         return VerseIdentification(
