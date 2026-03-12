@@ -32,7 +32,7 @@ struct PrayerView: View {
                 // Translation area
                 if let ayah = vm.currentAyah {
                     TranslationView(ayah: ayah)
-                        .id(ayah.surah * 1000 + ayah.ayah)
+                        .id(ayah.id)
                 } else {
                     // Idle state
                     VStack(spacing: 12) {
