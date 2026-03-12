@@ -12,7 +12,7 @@ struct PrayerView: View {
                 // Language selector (top)
                 HStack {
                     Menu {
-                        Button("🇸🇦 العربية") { vm.selectedLanguage = "arabic" }
+                        Button("🇾🇪 العربية") { vm.selectedLanguage = "arabic" }
                         Button("🇹🇷 Türkçe") { vm.selectedLanguage = "turkish" }
                         Button("🇬🇧 English") { vm.selectedLanguage = "english" }
                         Button("🇫🇷 Français") { vm.selectedLanguage = "french" }
