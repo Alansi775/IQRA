@@ -53,12 +53,9 @@ struct PrayerView: View {
                 
                 Spacer()
                 
-                // Recognized text (small, subtle)
+                // Recognized text (small, subtle) - NO LABEL
                 if !vm.recognizedText.isEmpty {
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("قال الإمام:")
-                            .font(.system(size: 11, weight: .light))
-                            .foregroundColor(.white.opacity(0.3))
                         Text(vm.recognizedText)
                             .font(.system(size: 14, weight: .light))
                             .foregroundColor(.white.opacity(0.5))
