@@ -18,6 +18,7 @@ final class PrayerViewModel: ObservableObject {
     // Buffer system: collect text for 1-2 seconds before sending to LLM
     private var textBuffer: String = ""
     private var bufferTimer: Timer?
+    private var lastProcessedBuffer: String = ""  // Track last buffer to avoid duplication
     private let BUFFER_TIMEOUT: TimeInterval = 1.5  // استجمع لمدة 1.5 ثانية
     private let MIN_BUFFER_WORDS = 2  // الحد الأدنى من الكلمات قبل المعالجة
     
@@ -69,8 +70,21 @@ final class PrayerViewModel: ObservableObject {
         recognizedText = text
         print("📝 Processing text: \(text)")
         
-        // Add text to buffer instead of processing immediately
-        textBuffer = text
+        // Extract only NEW text (avoid duplication from STT)
+        // If text starts with what we already processed, take only the new part
+        let cleanedBuffer: String
+        if !lastProcessedBuffer.isEmpty && text.starts(with: lastProcessedBuffer) {
+            // Text contains old buffer + new words
+            let newPart = String(text.dropFirst(lastProcessedBuffer.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+            cleanedBuffer = newPart.isEmpty ? text : newPart
+            print("🔄 New text detected: '\(cleanedBuffer)' (filtered from accumulated STT)")
+        } else {
+            // Completely new text
+            cleanedBuffer = text
+            print("🆕 Fresh text detected: '\(cleanedBuffer)'")
+        }
+        
+        textBuffer = cleanedBuffer
         
         // Reset and restart buffer timer
         bufferTimer?.invalidate()
@@ -133,9 +147,12 @@ final class PrayerViewModel: ObservableObject {
                 surahName: displaySurah
             )
             
+            // IMPORTANT: Save processed buffer BEFORE clearing
+            lastProcessedBuffer = textBuffer
+            
             // Clear recognized text immediately
             recognizedText = ""
-            textBuffer = ""  // Clear buffer
+            textBuffer = ""  // Clear buffer for next verse
             
             // Always update explanation (even for same verse, explanations may differ)
             explanation = displayExplanation
