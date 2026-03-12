@@ -123,10 +123,23 @@ final class PrayerViewModel: ObservableObject {
             }
             
             // AI-powered verse identification
-            // Let LLM guess which verse, get explanation, and prepare for next verse
-            print("🧠 Using AI to identify verse from buffered text...")
+            // IMPORTANT: Send full context to LLM, not just new words!
+            // Include last few words from previous + new words for continuity
+            let contextToSend: String
+            if !lastFullProcessedText.isEmpty {
+                // Get last ~3 words from previous text for context
+                let previousWords = lastFullProcessedText.split(separator: " ").suffix(3)
+                let context = previousWords.joined(separator: " ")
+                contextToSend = context.isEmpty ? textBuffer : "\(context) \(textBuffer)"
+                print("📋 Context: '\(context)' + New: '\(textBuffer)'")
+            } else {
+                contextToSend = textBuffer
+                print("📋 First time, no context needed")
+            }
             
-            let identification = try await groqService.identifyVerseAndExplain(recognizedText: textBuffer, language: selectedLanguage)
+            print("🧠 Using AI to identify verse from: \(contextToSend)")
+            
+            let identification = try await groqService.identifyVerseAndExplain(recognizedText: contextToSend, language: selectedLanguage)
             
             guard !identification.surahName.isEmpty && !identification.ayahNumber.isEmpty else {
                 print("⚠️  LLM could not identify verse")
@@ -154,13 +167,11 @@ final class PrayerViewModel: ObservableObject {
                 surahName: displaySurah
             )
             
-            // IMPORTANT: Save FULL accumulated text (buffer + what we sent to LLM)
-            // This prevents reprocessing the same section
+            // IMPORTANT: Save current buffer to use as context for next
+            // This maintains continuity and helps LLM understand the verse correctly
             if recognizedText.isEmpty {
-                // If recognizedText was cleared, use lastFullProcessedText + buffer
                 lastFullProcessedText = lastFullProcessedText.isEmpty ? textBuffer : lastFullProcessedText + " " + textBuffer
             } else {
-                // Use current recognized text (which has full STT output)
                 lastFullProcessedText = recognizedText
             }
             
@@ -168,7 +179,7 @@ final class PrayerViewModel: ObservableObject {
             recognizedText = ""
             textBuffer = ""  // Clear buffer for next verse
             
-            // Always update explanation (even for same verse, explanations may differ)
+            // Always update explanation
             explanation = displayExplanation
             
             // Track last processed to prevent excessive API calls
