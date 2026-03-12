@@ -49,18 +49,33 @@ final class GroqService {
                 if httpResponse.statusCode != 200 {
                     let errorText = String(data: data, encoding: .utf8) ?? "Unknown error"
                     print("❌ Groq API error: \(errorText)")
+                    throw NSError(domain: "GroqService", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorText])
                 }
             }
             
-            if let decodedResponse = try? JSONDecoder().decode(GroqChatResponse.self, from: data),
-               let firstChoice = decodedResponse.choices.first,
-               let content = firstChoice.message.content {
-                let explanation = String(content)  // Explicit String conversion
-                print("✅ Groq response: \(explanation)")
-                return explanation.trimmingCharacters(in: .whitespaces)
-            }
+            let decoder = JSONDecoder()
             
-            throw NSError(domain: "GroqService", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+            do {
+                let decodedResponse = try decoder.decode(GroqChatResponse.self, from: data)
+                if let firstChoice = decodedResponse.choices.first,
+                   let content = firstChoice.message.content {
+                    let explanation = String(content).trimmingCharacters(in: .whitespaces)
+                    print("✅ Groq response: \(explanation)")
+                    return explanation
+                } else {
+                    print("⚠️  Groq response has no choices or content")
+                    throw NSError(domain: "GroqService", code: -3, userInfo: [NSLocalizedDescriptionKey: "No valid response message"])
+                }
+            } catch let DecodingError.dataCorrupted(context) {
+                print("❌ JSON decode error - dataCorrupted: \(context.debugDescription)")
+                throw NSError(domain: "GroqService", code: -4, userInfo: [NSLocalizedDescriptionKey: "Response format error"])
+            } catch let DecodingError.keyNotFound(key, context) {
+                print("❌ JSON decode error - keyNotFound: \(key), \(context.debugDescription)")
+                throw NSError(domain: "GroqService", code: -4, userInfo: [NSLocalizedDescriptionKey: "Missing response field"])
+            } catch {
+                print("❌ JSON decode error: \(error)")
+                throw NSError(domain: "GroqService", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+            }
         } catch {
             print("❌ Explanation request failed: \(error)")
             throw error

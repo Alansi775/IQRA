@@ -273,7 +273,10 @@ final class QuranService {
                     let data: AyahData?
                 }
                 
-                if let response = try? JSONDecoder().decode(AyahResponse.self, from: data),
+                // Use custom decoder that ignores unknown fields
+                let decoder = JSONDecoder()
+                
+                if let response = try? decoder.decode(AyahResponse.self, from: data),
                    let ayahData = response.data {
                     
                     // Explicitly convert all JSON strings to Swift String type
@@ -281,6 +284,12 @@ final class QuranService {
                     let surahNumber = Int(ayahData.surah.number)
                     let ayahNumber = Int(ayahData.numberInSurah)
                     let sName = String(ayahData.surah.name)
+                    
+                    // Validate non-empty strings
+                    guard !arabicText.trimmingCharacters(in: .whitespaces).isEmpty else {
+                        print("  ⚠️  Empty Arabic text for \(surah):\(ayah)")
+                        return nil
+                    }
                     
                     let ayah = Ayah(
                         surah: surahNumber,

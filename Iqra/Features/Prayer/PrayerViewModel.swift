@@ -91,11 +91,22 @@ final class PrayerViewModel: ObservableObject {
                     الآية: \(ayah.arabic)
                     """
                     
-                    let explain = try await groqService.explainVerse(prompt: explainPrompt)
-                    let explanationText = String(explain)  // Explicit String conversion
-                    
-                    explanation = explanationText
-                    print("✅ Groq explanation: \(explanationText)")
+                    do {
+                        let explain = try await groqService.explainVerse(prompt: explainPrompt)
+                        let explanationText = String(explain).trimmingCharacters(in: .whitespaces)
+                        
+                        guard !explanationText.isEmpty else {
+                            print("⚠️  Groq returned empty explanation")
+                            explanation = ""
+                            return
+                        }
+                        
+                        explanation = explanationText
+                        print("✅ Groq explanation: \(explanationText)")
+                    } catch {
+                        print("❌ Groq error: \(error.localizedDescription)")
+                        explanation = ""
+                    }
                 } else if wordCount < 3 {
                     print("⏳ Partial verse (< 3 words) - waiting for complete verse before Groq")
                     explanation = "" // Clear explanation while waiting for complete verse
