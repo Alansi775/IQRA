@@ -7,6 +7,7 @@ final class PrayerViewModel: ObservableObject {
     @Published var recognizedText = ""
     @Published var explanation = ""
     @Published var errorMessage: String?
+    @Published var selectedLanguage = "arabic"  // "arabic" or "turkish"
     
     private let audioService = AudioService()
     private let groqService = GroqService(apiKey: Config.groqAPIKey)
@@ -104,7 +105,7 @@ final class PrayerViewModel: ObservableObject {
             // Let LLM guess which verse, get explanation, and prepare for next verse
             print("🧠 Using AI to identify verse from buffered text...")
             
-            let identification = try await groqService.identifyVerseAndExplain(recognizedText: textBuffer)
+            let identification = try await groqService.identifyVerseAndExplain(recognizedText: textBuffer, language: selectedLanguage)
             
             guard !identification.surahName.isEmpty && !identification.ayahNumber.isEmpty else {
                 print("⚠️  LLM could not identify verse")

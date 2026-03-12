@@ -84,9 +84,27 @@ final class GroqService {
     
     /// AI-powered verse identification and explanation
     /// The LLM guesses which verse the user is reciting and provides explanation + next verse
-    func identifyVerseAndExplain(recognizedText: String) async throws -> VerseIdentification {
+    func identifyVerseAndExplain(recognizedText: String, language: String = "arabic") async throws -> VerseIdentification {
         guard !apiKey.isEmpty else {
             throw NSError(domain: "GroqService", code: -1, userInfo: [NSLocalizedDescriptionKey: "API key is empty"])
+        }
+        
+        // Build language instruction dynamically
+        let language_instruction: String
+        if language.lowercased() == "arabic" {
+            language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
+        } else if language.lowercased() == "turkish" {
+            language_instruction = "Cevap dilini Türkçe yapın. Tüm açıklamalar Türkçe olsun."
+        } else if language.lowercased() == "english" {
+            language_instruction = "Answer in English only. All explanations in English."
+        } else if language.lowercased() == "french" {
+            language_instruction = "Répondez en français uniquement. Toutes les explications en français."
+        } else if language.lowercased() == "german" {
+            language_instruction = "Antworten Sie nur auf Deutsch. Alle Erklärungen auf Deutsch."
+        } else if language.lowercased() == "urdu" {
+            language_instruction = "اردو میں جواب دیں۔ تمام وضاحتیں اردو میں ہوں۔"
+        } else {
+            language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
         }
         
         // Prompt the LLM to recognize the verse even with imperfect STT
@@ -96,10 +114,12 @@ final class GroqService {
         الكلمات المسموعة من ميكروفون المصلي (قد لا تكون دقيقة 100%):
         "\(recognizedText)"
         
+        \(language_instruction)
+        
         المطلوب:
         1. خمّن أي آية من القرآن الكريم بدقة (حتى لو STT غير دقيق)
         2. أعطِ اسم السورة ورقم الآية الصحيحة فقط
-        3. شرح روحي قصير جداً (جملة واحدة أقل من 10 كلمات فقط) - الشعور الروحي فقط
+        3. شرح روحي قصير جداً (جملة واحدة أقل من 10 كلمات فقط) - الشعور الروحي فقط بلغة المستخدم
         4. اسم السورة والآية التالية للاستعداد النفسي
         
         تحذير - لا تفعل:
@@ -111,7 +131,7 @@ final class GroqService {
         أجب بصيغة هذه (بالضبط، بدون إضافات):
         السورة: [فقط اسم السورة]
         الآية: [فقط الرقم]
-        الشرح: [جملة روحية قصيرة جداً]
+        الشرح: [جملة روحية قصيرة جداً بالعربية أو اللغة المختارة]
         التالية: [اسم السورة رقم]
         """
         
