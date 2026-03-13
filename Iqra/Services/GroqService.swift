@@ -89,6 +89,8 @@ final class GroqService {
             throw NSError(domain: "GroqService", code: -1, userInfo: [NSLocalizedDescriptionKey: "API key is empty"])
         }
         
+        print("🌍 LLM Language selected: '\(language)'")  // Debug: Print selected language
+        
         // Build language instruction dynamically
         let language_instruction: String
         switch language.lowercased() {
@@ -145,7 +147,14 @@ final class GroqService {
         الكلمات المسموعة من ميكروفون المصلي (قد تكون فيها أخطاء من التطبيق، صححها):
         "\(recognizedText)"
         
-        \(language_instruction)
+        ⚠️  LANGUAGE INSTRUCTION - MANDATORY - READ THIS FIRST:
+        الشرح فقط بهذه اللغة -> \(language_instruction)
+        
+        BUT CRITICAL: الـ labels والـ format يجب أن تكون بالعربية دائماً:
+        السورة: [اسم بالعربية]
+        الآية: [الرقم]
+        الشرح: [الشرح باللغة المختارة]
+        التالية: [الاسم بالعربية والرقم]
         
         مهم جداً:
         • السمع قد يخطئ - مثلاً "اهلين" قد تكون "اهدنا"، "ملك" قد تكون "مالك"
@@ -171,12 +180,13 @@ final class GroqService {
         ❌ لا تقول كلمات صعبة
         ❌ لا تشرح السياق الأكاديمي
         ❌ لا تصحح وتقول الكلام الخاطئ - قول الصحيح مباشرة
+        ❌ لا تكتب بلغة مختلفة عن اللغة المطلوبة أعلاه
         
         أجب بصيغة هذه (بالضبط، بدون إضافات):
-        السورة: [فقط اسم السورة]
+        السورة: [فقط اسم السورة بالعربية]
         الآية: [فقط الرقم]
-        الشرح: [شرح بسيط يوضح ماذا تقول الآية]
-        التالية: [اسم السورة رقم]
+        الشرح: [شرح بسيط يوضح ماذا تقول الآية - الشرح فقط باللغة المختارة، الـ label "الشرح:" بالعربية دائماً]
+        التالية: [اسم السورة رقم بالعربية]
         """
         
         let requestBody: [String: Any] = [
@@ -188,7 +198,7 @@ final class GroqService {
                 ]
             ],
             "max_tokens": 100,  // Reduced from 150 to force conciseness
-            "temperature": 0.5  // Slightly higher to allow smart error correction while maintaining consistency
+            "temperature": 0.7  // Higher to allow language variety while maintaining consistency
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {

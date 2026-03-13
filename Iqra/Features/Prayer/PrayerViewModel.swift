@@ -138,6 +138,7 @@ final class PrayerViewModel: ObservableObject {
             }
             
             print("🧠 Using AI to identify verse from: \(contextToSend)")
+            print("🌍 Current selected language: '\(selectedLanguage)'")
             
             let identification = try await groqService.identifyVerseAndExplain(recognizedText: contextToSend, language: selectedLanguage)
             
