@@ -95,45 +95,45 @@ final class GroqService {
         case "arabic":
             language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
         case "turkish":
-            language_instruction = "Cevap dilini Türkçe yapın. Tüm açıklamalar Türkçe olsun."
+            language_instruction = "ÇOOK ÖNEMLİ: Cevap dilini Türkçe yapın. Tüm açıklamalar TÜRKÇE olsun. Asla Arapça yazma."
         case "english":
-            language_instruction = "Answer in English only. All explanations in English."
+            language_instruction = "VERY IMPORTANT: Answer ONLY in English. All explanations MUST be in English. Never answer in Arabic."
         case "french":
-            language_instruction = "Répondez en français uniquement. Toutes les explications en français."
+            language_instruction = "TRÈS IMPORTANT: Répondez UNIQUEMENT en français. Toutes les explications en français. Jamais d'arabe."
         case "german":
-            language_instruction = "Antworten Sie nur auf Deutsch. Alle Erklärungen auf Deutsch."
+            language_instruction = "SEHR WICHTIG: Antworten Sie NUR auf Deutsch. Alle Erklärungen auf Deutsch. Keine Arabisch."
         case "urdu":
-            language_instruction = "اردو میں جواب دیں۔ تمام وضاحتیں اردو میں ہوں۔"
+            language_instruction = "بہت اہم: اردو میں جواب دیں۔ تمام وضاحتیں اردو میں ہوں۔ کبھی عربی نہ لکھیں۔"
         case "chinese":
-            language_instruction = "请只用简体中文回答。所有解释都必须是简体中文。"
+            language_instruction = "非常重要：只用简体中文回答。所有解释都必须是简体中文。不要用阿拉伯语。"
         case "korean":
-            language_instruction = "한국어로만 답변하세요. 모든 설명은 한국어여야 합니다."
+            language_instruction = "매우 중요: 한국어로만 답변하세요. 모든 설명은 한국어여야 합니다. 아랍어 금지."
         case "japanese":
-            language_instruction = "日本語だけで答えてください。すべての説明は日本語である必要があります。"
+            language_instruction = "非常に重要：日本語だけで答えてください。すべての説明は日本語である必要があります。アラビア語は禁止。"
         case "malay":
-            language_instruction = "Jawab hanya dalam bahasa Melayu. Semua penjelasan harus dalam bahasa Melayu."
+            language_instruction = "SANGAT PENTING: Jawab hanya dalam bahasa Melayu. Semua penjelasan harus dalam bahasa Melayu. Jangan gunakan Bahasa Arab."
         case "indonesian":
-            language_instruction = "Jawab hanya dalam bahasa Indonesia. Semua penjelasan harus dalam bahasa Indonesia."
+            language_instruction = "SANGAT PENTING: Jawab hanya dalam bahasa Indonesia. Semua penjelasan harus dalam bahasa Indonesia. Jangan gunakan Bahasa Arab."
         case "thai":
-            language_instruction = "ตอบเฉพาะภาษาไทยเท่านั้น คำอธิบายทั้งหมดต้องเป็นภาษาไทย"
+            language_instruction = "สำคัญมาก: ตอบเฉพาะภาษาไทยเท่านั้น คำอธิบายทั้งหมดต้องเป็นภาษาไทย ห้ามใช้ภาษาอาหรับ"
         case "vietnamese":
-            language_instruction = "Chỉ trả lời bằng tiếng Việt. Tất cả các giải thích phải bằng tiếng Việt."
+            language_instruction = "RẤT QUAN TRỌNG: Chỉ trả lời bằng tiếng Việt. Tất cả các giải thích phải bằng tiếng Việt. Không sử dụng Tiếng Ả Rập."
         case "portuguese":
-            language_instruction = "Responda apenas em português. Todas as explicações devem ser em português."
+            language_instruction = "MUITO IMPORTANTE: Responda apenas em português. Todas as explicações devem ser em português. Nunca escreva em árabe."
         case "spanish":
-            language_instruction = "Responda solo en español. Todas las explicaciones deben ser en español."
+            language_instruction = "MUY IMPORTANTE: Responda solo en español. Todas las explicaciones deben ser en español. Nunca en árabe."
         case "russian":
-            language_instruction = "Ответьте только на русском языке. Все объяснения должны быть на русском языке."
+            language_instruction = "ОЧЕНЬ ВАЖНО: Ответьте только на русском языке. Все объяснения должны быть на русском языке. Никогда по-арабски."
         case "hindi":
-            language_instruction = "केवल हिंदी में उत्तर दें। सभी व्याख्याएं हिंदी में होनी चाहिए।"
+            language_instruction = "बहुत महत्वपूर्ण: केवल हिंदी में उत्तर दें। सभी व्याख्याएं हिंदी में होनी चाहिए। कभी अरबी नहीं।"
         case "bengali":
-            language_instruction = "শুধুমাত্র বাংলায় উত্তর দিন। সমস্ত ব্যাখ্যা বাংলায় হওয়া উচিত।"
+            language_instruction = "অত্যন্ত গুরুত্বপূর্ণ: শুধুমাত্র বাংলায় উত্তর দিন। সমস্ত ব্যাখ্যা বাংলায় হওয়া উচিত। কখনও আরবি নয়।"
         case "swahili":
-            language_instruction = "Jibu kwa Kiswahili tu. Maelezo yote lazima yawe kwa Kiswahili."
+            language_instruction = "MUHIMU SANA: Jibu kwa Kiswahili tu. Maelezo yote lazima yawe kwa Kiswahili. Hakuna Kiarabu."
         case "hebrew":
-            language_instruction = "ענה רק בעברית. כל ההסברים חייבים להיות בעברית."
+            language_instruction = "חשוב מאוד: ענה רק בעברית. כל ההסברים חייבים להיות בעברית. אסור ערבית."
         case "persian":
-            language_instruction = "فقط به فارسی پاسخ دهید. تمام توضیحات باید به فارسی باشند."
+            language_instruction = "بسیار مهم: فقط به فارسی پاسخ دهید. تمام توضیحات باید به فارسی باشند. هرگز عربی نباشد."
         default:
             language_instruction = "أجب باللغة العربية فقط. كل الشروحات بالعربية فقط."
         }
@@ -142,32 +142,40 @@ final class GroqService {
         let identifyPrompt = """
         أنت معلم قرآني بسيط وواضح. المصلي يقف أمام الله يقرأ القرآن.
         
-        الكلمات المسموعة من ميكروفون المصلي (قد لا تكون دقيقة 100%):
+        الكلمات المسموعة من ميكروفون المصلي (قد تكون فيها أخطاء من التطبيق، صححها):
         "\(recognizedText)"
         
         \(language_instruction)
         
+        مهم جداً:
+        • السمع قد يخطئ - مثلاً "اهلين" قد تكون "اهدنا"، "ملك" قد تكون "مالك"
+        • ابحث عن الآية الصحيحة من القرآن حتى لو النطق مختلف شوي
+        • أنت تعرف القرآن كله - استخدم معرفتك لتصحيح الأخطاء
+        • الهدف: تحديد الآية الدقيقة اللي ينطقها المصلي (حتى لو مع أخطاء)
+        
         المطلوب:
-        1. خمّن أي آية من القرآن الكريم بدقة (حتى لو STT غير دقيق)
+        1. صحح أخطاء STT واعرف الآية الصحيحة من القرآن الكريم
         2. أعطِ اسم السورة ورقم الآية الصحيحة فقط
-        3. شرح مباشر وسهل جداً (جملة واحدة فقط، 10 كلمات أقل) - اشرح ماذا تقول الآية بطريقة بسيطة جداً يفهمها أي شخص
-        4. اسم السورة والآية التالية
+        3. شرح مباشر وسهل جداً (جملة واحدة فقط، أقل من 10 كلمات) - اشرح ماذا تقول الآية بطريقة بسيطة جداً يفهمها أي شخص
+        4. اسم السورة والآية التالية بنفس الترتيب
         
         ركّز على:
         ✅ معنى الآية بكلمات بسيطة جداً (بدون كلمات صعبة)
-        ✅ مباشر وواضح جداً
-        ✅ يوضح اللي تقول الآية مباشرة بدون تفاسير طويلة
+        ✅ مباشر وواضح جداً - ماذا تقول الآية فقط
+        ✅ إجابة قصيرة جداً - سطر واحد للشرح
+        ✅ الشرح يجب أن يكون باللغة اللي اختارها المصلي
         
         لا تفعل:
         ❌ لا تضيف تعليقات إضافية
         ❌ لا تقول "أنا أعتقد" أو "قد يكون"
-        ❌ لا تقول كلمات صعبة مثل "المقام" أو "التجلي"
+        ❌ لا تقول كلمات صعبة
         ❌ لا تشرح السياق الأكاديمي
+        ❌ لا تصحح وتقول الكلام الخاطئ - قول الصحيح مباشرة
         
         أجب بصيغة هذه (بالضبط، بدون إضافات):
         السورة: [فقط اسم السورة]
         الآية: [فقط الرقم]
-        الشرح: [شرح بسيط جداً يوضح ماذا تقول الآية]
+        الشرح: [شرح بسيط يوضح ماذا تقول الآية]
         التالية: [اسم السورة رقم]
         """
         
@@ -180,7 +188,7 @@ final class GroqService {
                 ]
             ],
             "max_tokens": 100,  // Reduced from 150 to force conciseness
-            "temperature": 0.3  // More conservative (was 0.4) for consistent format
+            "temperature": 0.5  // Slightly higher to allow smart error correction while maintaining consistency
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
