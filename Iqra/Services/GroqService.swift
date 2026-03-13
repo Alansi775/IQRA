@@ -91,6 +91,34 @@ final class GroqService {
         
         print("🌍 LLM Language selected: '\(language)'")  // Debug: Print selected language
         
+        // Build language code for system message
+        let languageCode = language.lowercased()
+        let responseLanguage: String
+        
+        switch languageCode {
+        case "turkish": responseLanguage = "Turkish - Türkçe"
+        case "english": responseLanguage = "English"
+        case "french": responseLanguage = "French - Français"
+        case "german": responseLanguage = "German - Deutsch"
+        case "urdu": responseLanguage = "Urdu - اردو"
+        case "chinese": responseLanguage = "Chinese - 中文"
+        case "korean": responseLanguage = "Korean - 한국어"
+        case "japanese": responseLanguage = "Japanese - 日本語"
+        case "malay": responseLanguage = "Malay - Melayu"
+        case "indonesian": responseLanguage = "Indonesian - Indonesia"
+        case "thai": responseLanguage = "Thai - ไทย"
+        case "vietnamese": responseLanguage = "Vietnamese - Tiếng Việt"
+        case "portuguese": responseLanguage = "Portuguese - Português"
+        case "spanish": responseLanguage = "Spanish - Español"
+        case "russian": responseLanguage = "Russian - Русский"
+        case "hindi": responseLanguage = "Hindi - हिंदी"
+        case "bengali": responseLanguage = "Bengali - বাংলা"
+        case "swahili": responseLanguage = "Swahili - Kiswahili"
+        case "hebrew": responseLanguage = "Hebrew - עברית"
+        case "persian": responseLanguage = "Persian - فارسی"
+        default: responseLanguage = "Arabic - العربية"
+        }
+        
         // Build language instruction dynamically
         let language_instruction: String
         switch language.lowercased() {
@@ -142,65 +170,41 @@ final class GroqService {
         
         // Prompt the LLM to recognize the verse even with imperfect STT
         let identifyPrompt = """
-        أنت معلم قرآني دقيق جداً. المصلي يقف أمام الله يقرأ القرآن.
-        
         الكلمات المسموعة من ميكروفون المصلي (قد تكون فيها أخطاء):
         "\(recognizedText)"
         
-        ⚠️  CRITICAL - READ FIRST:
-        \(language_instruction)
-        
-        IMPORTANT - OUTPUT FORMAT (EXACT MATCH):
-        السورة: [اسم بالعربية فقط]
-        الآية: [رقم فقط]
-        الشرح: [شرح باللغة المختارة فقط - NO ARABIC]
+        أجب بصيغة هذه (بالضبط - لا تغير):
+        السورة: [اسم بالعربية]
+        الآية: [رقم]
+        الشرح: [شرح بسيط]
         التالية: [اسم بالعربية رقم]
-        
-        EXAMPLES TO FOLLOW:
-        Turkish example:
-        السورة: الإخلاص
-        الآية: 1
-        الشرح: Allah birdir ve tek
-        التالية: الإخلاص 2
-        
-        English example:
-        السورة: الإخلاص
-        الآية: 1
-        الشرح: God is one
-        التالية: الإخلاص 2
-        
-        French example:
-        السورة: الإخلاص
-        الآية: 1
-        الشرح: Dieu est seul
-        التالية: الإخلاص 2
-        
-        ⚠️  RULES:
-        1. Labels (السورة، الآية، الشرح، التالية) = ALWAYS Arabic
-        2. Content after "الشرح:" = ONLY selected language, NO mixing
-        3. Find exact verse despite STT errors
-        4. Surah names in Arabic only
-        5. Verse number must be correct
-        
-        ❌ DO NOT:
-        - Mix languages in explanation
-        - Add extra text
-        - Say "I think" or "maybe"
-        - Use difficult words
-        - Change format from examples above
-        - Write translation for surah name
         """
+        
+        let systemMessage = """
+        أنت معلم قرآني دقيق جداً. المطلوب:
+        1. تحديد الآية الدقيقة من القرآن (صحح أخطاء STT)
+        2. الإجابة بـ4 أسطر فقط: السورة + الآية + الشرح + التالية
+        3. اسم السورة والتالية بالعربية دائماً
+        4. الشرح فقط بـ\(responseLanguage) - لا تكتب بأي لغة أخرى
+        5. شرح قصير جداً (جملة واحدة أقل من 8 كلمات)
+        """
+        
+        print("🌍 Response language: '\(responseLanguage)' (from code: '\(languageCode)')")
         
         let requestBody: [String: Any] = [
             "model": "llama-3.3-70b-versatile",
             "messages": [
                 [
+                    "role": "system",
+                    "content": systemMessage
+                ],
+                [
                     "role": "user",
                     "content": identifyPrompt
                 ]
             ],
-            "max_tokens": 80,  // Smaller to prevent extra content
-            "temperature": 0.4  // Lower for consistency and accuracy in format
+            "max_tokens": 90,
+            "temperature": 0.3  // Lower for consistency
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
