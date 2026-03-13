@@ -31,7 +31,6 @@ struct PrayerView: View {
                         Button("🇮🇳 हिंदी") { vm.selectedLanguage = "hindi" }
                         Button("🇧🇩 বাংলা") { vm.selectedLanguage = "bengali" }
                         Button("🇹🇿 Kiswahili") { vm.selectedLanguage = "swahili" }
-                        Button("🇮🇱 עברית") { vm.selectedLanguage = "hebrew" }
                         Button("🇮🇷 فارسی") { vm.selectedLanguage = "persian" }
                     } label: {
                         HStack(spacing: 6) {
