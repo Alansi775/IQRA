@@ -142,51 +142,53 @@ final class GroqService {
         
         // Prompt the LLM to recognize the verse even with imperfect STT
         let identifyPrompt = """
-        أنت معلم قرآني بسيط وواضح. المصلي يقف أمام الله يقرأ القرآن.
+        أنت معلم قرآني دقيق جداً. المصلي يقف أمام الله يقرأ القرآن.
         
-        الكلمات المسموعة من ميكروفون المصلي (قد تكون فيها أخطاء من التطبيق، صححها):
+        الكلمات المسموعة من ميكروفون المصلي (قد تكون فيها أخطاء):
         "\(recognizedText)"
         
-        ⚠️  LANGUAGE INSTRUCTION - MANDATORY - READ THIS FIRST:
-        الشرح فقط بهذه اللغة -> \(language_instruction)
+        ⚠️  CRITICAL - READ FIRST:
+        \(language_instruction)
         
-        BUT CRITICAL: الـ labels والـ format يجب أن تكون بالعربية دائماً:
-        السورة: [اسم بالعربية]
-        الآية: [الرقم]
-        الشرح: [الشرح باللغة المختارة]
-        التالية: [الاسم بالعربية والرقم]
+        IMPORTANT - OUTPUT FORMAT (EXACT MATCH):
+        السورة: [اسم بالعربية فقط]
+        الآية: [رقم فقط]
+        الشرح: [شرح باللغة المختارة فقط - NO ARABIC]
+        التالية: [اسم بالعربية رقم]
         
-        مهم جداً:
-        • السمع قد يخطئ - مثلاً "اهلين" قد تكون "اهدنا"، "ملك" قد تكون "مالك"
-        • ابحث عن الآية الصحيحة من القرآن حتى لو النطق مختلف شوي
-        • أنت تعرف القرآن كله - استخدم معرفتك لتصحيح الأخطاء
-        • الهدف: تحديد الآية الدقيقة اللي ينطقها المصلي (حتى لو مع أخطاء)
+        EXAMPLES TO FOLLOW:
+        Turkish example:
+        السورة: الإخلاص
+        الآية: 1
+        الشرح: Allah birdir ve tek
+        التالية: الإخلاص 2
         
-        المطلوب:
-        1. صحح أخطاء STT واعرف الآية الصحيحة من القرآن الكريم
-        2. أعطِ اسم السورة ورقم الآية الصحيحة فقط
-        3. شرح مباشر وسهل جداً (جملة واحدة فقط، أقل من 10 كلمات) - اشرح ماذا تقول الآية بطريقة بسيطة جداً يفهمها أي شخص
-        4. اسم السورة والآية التالية بنفس الترتيب
+        English example:
+        السورة: الإخلاص
+        الآية: 1
+        الشرح: God is one
+        التالية: الإخلاص 2
         
-        ركّز على:
-        ✅ معنى الآية بكلمات بسيطة جداً (بدون كلمات صعبة)
-        ✅ مباشر وواضح جداً - ماذا تقول الآية فقط
-        ✅ إجابة قصيرة جداً - سطر واحد للشرح
-        ✅ الشرح يجب أن يكون باللغة اللي اختارها المصلي
+        French example:
+        السورة: الإخلاص
+        الآية: 1
+        الشرح: Dieu est seul
+        التالية: الإخلاص 2
         
-        لا تفعل:
-        ❌ لا تضيف تعليقات إضافية
-        ❌ لا تقول "أنا أعتقد" أو "قد يكون"
-        ❌ لا تقول كلمات صعبة
-        ❌ لا تشرح السياق الأكاديمي
-        ❌ لا تصحح وتقول الكلام الخاطئ - قول الصحيح مباشرة
-        ❌ لا تكتب بلغة مختلفة عن اللغة المطلوبة أعلاه
+        ⚠️  RULES:
+        1. Labels (السورة، الآية، الشرح، التالية) = ALWAYS Arabic
+        2. Content after "الشرح:" = ONLY selected language, NO mixing
+        3. Find exact verse despite STT errors
+        4. Surah names in Arabic only
+        5. Verse number must be correct
         
-        أجب بصيغة هذه (بالضبط، بدون إضافات):
-        السورة: [فقط اسم السورة بالعربية]
-        الآية: [فقط الرقم]
-        الشرح: [شرح بسيط يوضح ماذا تقول الآية - الشرح فقط باللغة المختارة، الـ label "الشرح:" بالعربية دائماً]
-        التالية: [اسم السورة رقم بالعربية]
+        ❌ DO NOT:
+        - Mix languages in explanation
+        - Add extra text
+        - Say "I think" or "maybe"
+        - Use difficult words
+        - Change format from examples above
+        - Write translation for surah name
         """
         
         let requestBody: [String: Any] = [
@@ -197,8 +199,8 @@ final class GroqService {
                     "content": identifyPrompt
                 ]
             ],
-            "max_tokens": 100,  // Reduced from 150 to force conciseness
-            "temperature": 0.7  // Higher to allow language variety while maintaining consistency
+            "max_tokens": 80,  // Smaller to prevent extra content
+            "temperature": 0.4  // Lower for consistency and accuracy in format
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
@@ -229,7 +231,9 @@ final class GroqService {
             if let firstChoice = decodedResponse.choices.first,
                let content = firstChoice.message.content {
                 let response = String(content).trimmingCharacters(in: .whitespaces)
-                print("🧠 LLM Result: \(response)")
+                print("🧠 LLM Raw Response:")
+                print(response)
+                print("🧠 ---END RAW RESPONSE---")
                 
                 // Parse the response
                 return parseVerseIdentification(response)
@@ -251,36 +255,38 @@ final class GroqService {
         
         let lines = response.split(separator: "\n").map(String.init)
         
+        print("📋 Parsing \(lines.count) lines from LLM response")
+        
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
+            print("  -> Parsing line: '\(trimmed)'")
             
             if trimmed.hasPrefix("السورة:") {
                 let value = trimmed.replacingOccurrences(of: "السورة:", with: "")
                     .trimmingCharacters(in: .whitespaces)
-                // Take only the first word/number (ignore extra text)
                 surahName = value.split(separator: " ").first.map(String.init) ?? value
+                print("     ✅ السورة parsed: '\(surahName)'")
             } else if trimmed.hasPrefix("الآية:") {
                 let value = trimmed.replacingOccurrences(of: "الآية:", with: "")
                     .trimmingCharacters(in: .whitespaces)
-                // Take only the first number (ignore extra text)
                 ayahNumber = value.split(separator: " ").first.map(String.init) ?? value
+                print("     ✅ الآية parsed: '\(ayahNumber)'")
             } else if trimmed.hasPrefix("الشرح:") {
                 let value = trimmed.replacingOccurrences(of: "الشرح:", with: "")
                     .trimmingCharacters(in: .whitespaces)
-                // Take everything up to certain delimiters (ignore garbage)
-                explanation = value.split(separator: "،").first.map(String.init) ?? value
-                explanation = explanation.split(separator: "،").first.map(String.init) ?? explanation
+                explanation = value
+                print("     ✅ الشرح parsed: '\(explanation)'")
             } else if trimmed.hasPrefix("التالية:") {
                 let value = trimmed.replacingOccurrences(of: "التالية:", with: "")
                     .trimmingCharacters(in: .whitespaces)
-                // Take everything up to certain delimiters
-                nextVerse = value.split(separator: "،").first.map(String.init) ?? value
+                nextVerse = value
+                print("     ✅ التالية parsed: '\(nextVerse)'")
             }
         }
         
         // Validate that we got meaningful results
         if surahName.isEmpty || ayahNumber.isEmpty {
-            print("⚠️  Invalid parse result - surahName: '\(surahName)', ayahNumber: '\(ayahNumber)'")
+            print("⚠️  Invalid parse - السورة: '\(surahName)', الآية: '\(ayahNumber)'")
         }
         
         return VerseIdentification(
